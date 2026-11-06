@@ -53,7 +53,7 @@ NNCF で INT4 に圧縮します。サーバー（`server/npu_server.py`）は N
 ## セットアップ
 
 ```bat
-git clone https://github.com/<your-account>/PLaMo-NPU-WebUI.git
+git clone https://github.com/Wea017net/PLaMo-NPU-WebUI.git
 cd PLaMo-NPU-WebUI
 setup.bat
 ```

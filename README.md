@@ -52,7 +52,7 @@ and uses PLaMo's own tokenizer in Python.
 ## Setup
 
 ```bat
-git clone https://github.com/<your-account>/PLaMo-NPU-WebUI.git
+git clone https://github.com/Wea017net/PLaMo-NPU-WebUI.git
 cd PLaMo-NPU-WebUI
 setup.bat
 ```
