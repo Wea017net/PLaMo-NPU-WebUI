@@ -1,0 +1,72 @@
+name: Web UI Feature Request / WebUI 機能追加の提案
+description: Suggest a new feature or an improvement for the web UI. / Web UI への新機能や改善を提案します。
+title: "[Web UI] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for the idea! English or Japanese is fine.
+        提案ありがとうございます。英語・日本語のどちらでも書けます。
+
+        This template is for the web UI. Requests to support other models or hardware are out of scope.
+        Please note that the web UI must keep working offline (no CDNs, web fonts or other external requests).
+        このテンプレートは Web UI 向けです。他のモデルやハードウェアへの対応は対象外です。
+        また、Web UI はオフラインで動く必要があります（CDN・Web フォントなど外部との通信は追加できません）。
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks / 確認事項
+      options:
+        - label: I searched the existing issues and this has not been suggested yet. / 既存の Issue を検索し、まだ提案されていないことを確認しました。
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / 対象
+      options:
+        - Translation (input, output, languages, style) / 翻訳（入力・訳文・言語・文体）
+        - Statistics panel / 統計パネル
+        - Appearance / theme / 見た目・テーマ
+        - UI language / 表示言語
+        - Accessibility / アクセシビリティ
+        - Other / その他
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or motivation / 困っていること・動機
+      description: What are you trying to do, and what makes it hard today? / 何をしたいのか、今は何が不便なのかを書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution / 提案する内容
+      description: How should it work? Mockups or screenshots are welcome. / どのように動けばよいか。モックアップやスクリーンショットも歓迎します。
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered / 検討した代替案
+
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you like to implement it? / 自分で実装しますか？
+      options:
+        - "No / いいえ"
+        - "Yes, I can send a pull request / はい、プルリクエストを送れます"
+        - "Maybe, with some help / 手助けがあれば"
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context / 補足

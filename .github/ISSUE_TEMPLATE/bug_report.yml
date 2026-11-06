@@ -1,0 +1,141 @@
+name: Bug Report / バグ報告
+description: Report something that does not work as expected. / 期待どおりに動かない問題を報告します。
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for the report! English or Japanese is fine.
+        ご報告ありがとうございます。英語・日本語のどちらでも書けます。
+
+        This is an unofficial tool. Please do not report problems with it to Preferred Networks or Intel.
+        本ツールは非公式です。このツールの問題を Preferred Networks や Intel に問い合わせないでください。
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks / 確認事項
+      options:
+        - label: I searched the existing issues and this is not a duplicate. / 既存の Issue を検索し、重複していないことを確認しました。
+          required: true
+        - label: I am using the latest commit of `main`. / `main` の最新コミットで確認しました。
+          required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / 発生箇所
+      options:
+        - Setup / model build (setup.bat, tools/) / セットアップ・モデル変換
+        - Server startup / サーバーの起動
+        - Translation result / 翻訳結果
+        - Web UI / Web UI
+        - API / API
+        - Other / その他
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened? / 何が起きましたか？
+      description: A clear description of the problem. / 問題の内容を具体的に書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / 再現手順
+      placeholder: |
+        1. Run start-plamo-npu.bat
+        2. Select ...
+        3. Enter ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / 期待した動作
+    validations:
+      required: true
+
+  - type: textarea
+    id: translation
+    attributes:
+      label: Translation details (if relevant) / 翻訳の詳細（該当する場合）
+      description: |
+        Source text, source / target language, style (polite / plain) and the output.
+        If possible, compare with the original PLaMo 3 Translate model; mistakes that the original model also makes cannot be fixed here.
+        原文、翻訳元・翻訳先の言語、文体（敬体・常体）、出力結果。可能なら元の PLaMo 3 Translate とも比べてください。元のモデルでも同じ誤りが出る場合は、ここでは直せません。
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / ログ
+      description: |
+        Console output of start-plamo-npu.bat or setup.bat, and errors in the browser console (F12) for web UI problems.
+        start-plamo-npu.bat や setup.bat のコンソール出力。Web UI の問題ならブラウザーのコンソール（F12）のエラーも。
+      render: text
+
+  - type: input
+    id: os
+    attributes:
+      label: Windows version / Windows のバージョン
+      placeholder: "Windows 11 Home 24H2 (10.0.26100)"
+    validations:
+      required: true
+
+  - type: input
+    id: cpu
+    attributes:
+      label: CPU
+      placeholder: "Intel Core Ultra 7 258V"
+    validations:
+      required: true
+
+  - type: input
+    id: driver
+    attributes:
+      label: NPU driver version / NPU ドライバーのバージョン
+      description: Shown in the Statistics panel of the web UI. / Web UI の「統計」パネルに表示されます。
+      placeholder: "32.0.100.xxxx"
+
+  - type: dropdown
+    id: model
+    attributes:
+      label: Model / モデル
+      options:
+        - cw (INT4 per-channel)
+        - g128 (INT4 group-128)
+        - Not built yet / まだ作成していない
+        - Other / その他
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device / デバイス
+      options:
+        - NPU
+        - GPU
+        - CPU
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser (for web UI problems) / ブラウザー（Web UI の問題の場合）
+      placeholder: "Edge 142"
+
+  - type: input
+    id: commit
+    attributes:
+      label: Commit / コミット
+      description: Output of `git rev-parse --short HEAD`. / `git rev-parse --short HEAD` の出力。
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context / 補足
+      description: Screenshots or anything else that may help. / スクリーンショットなど、参考になる情報。
