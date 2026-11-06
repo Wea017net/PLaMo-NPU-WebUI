@@ -1,0 +1,126 @@
+name: Compatibility Report / 動作報告
+description: Share how it ran on your PC, whether it worked or not. / 自分の PC での動作結果を共有します（動いた・動かなかったどちらでも）。
+title: "[Report] "
+labels: ["compatibility report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reports from different PCs help other users and show which hardware works. Thank you!
+        English or Japanese is fine. If something failed, please also open a Bug Report with the details.
+        さまざまな PC での報告は、ほかの利用者の参考になります。ありがとうございます。
+        英語・日本語のどちらでも書けます。うまく動かなかった場合は、詳細をバグ報告でもお知らせください。
+
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result / 結果
+      options:
+        - Works / 動作した
+        - Works with problems / 問題はあるが動作した
+        - Does not work / 動作しなかった
+    validations:
+      required: true
+
+  - type: input
+    id: pc
+    attributes:
+      label: PC model / PC の機種
+      placeholder: "Maker and model / メーカーと型番"
+
+  - type: input
+    id: cpu
+    attributes:
+      label: CPU
+      placeholder: "Intel Core Ultra 7 258V"
+    validations:
+      required: true
+
+  - type: input
+    id: ram
+    attributes:
+      label: Memory / メモリ
+      placeholder: "32 GB"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Windows version / Windows のバージョン
+      placeholder: "Windows 11 Home 24H2 (10.0.26100)"
+    validations:
+      required: true
+
+  - type: input
+    id: driver
+    attributes:
+      label: NPU driver version / NPU ドライバーのバージョン
+      description: Shown in the Statistics panel of the web UI. / Web UI の「統計」パネルに表示されます。
+      placeholder: "32.0.100.xxxx"
+    validations:
+      required: true
+
+  - type: input
+    id: openvino
+    attributes:
+      label: OpenVINO / OpenVINO GenAI version / バージョン
+      description: Only if you changed requirements.txt. / requirements.txt から変更した場合のみ。
+      placeholder: "2026.4.1"
+
+  - type: dropdown
+    id: model
+    attributes:
+      label: Model / モデル
+      multiple: true
+      options:
+        - cw (INT4 per-channel)
+        - g128 (INT4 group-128)
+        - Other / その他
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device / デバイス
+      multiple: true
+      options:
+        - NPU
+        - GPU
+        - CPU
+    validations:
+      required: true
+
+  - type: input
+    id: speed
+    attributes:
+      label: Generation speed / 生成速度 (tok/s)
+      description: From the Statistics panel, e.g. for a few sentences of English → Japanese. / 「統計」パネルの値（英語数文の和訳など）。
+      placeholder: "e.g. 22"
+
+  - type: input
+    id: ttft
+    attributes:
+      label: Time to first token / 最初のトークンまでの時間
+      placeholder: "e.g. 0.6 s"
+
+  - type: input
+    id: startup
+    attributes:
+      label: Startup time (first / cached) / 起動時間（初回 / キャッシュ利用時）
+      placeholder: "e.g. 70 s / 25 s"
+
+  - type: input
+    id: commit
+    attributes:
+      label: Commit / コミット
+      description: Output of `git rev-parse --short HEAD`. / `git rev-parse --short HEAD` の出力。
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / 補足
+      description: |
+        Anything notable: setup problems, memory usage, translation quality, other apps running, power settings, etc.
+        セットアップ時の問題、メモリ使用量、翻訳品質、同時に動かしていたアプリ、電源設定など、気づいたこと。

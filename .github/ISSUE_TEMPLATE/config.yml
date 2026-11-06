@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: PLaMo 3 Translate model / PLaMo 3 Translate モデルについて
+    url: https://huggingface.co/pfnet/plamo-3-translate-2b
+    about: Questions about the model itself (license, original quality) go to the model card. / モデル自体（ライセンス・元のモデルの品質）についてはモデルカードを参照してください。
+  - name: OpenVINO GenAI
+    url: https://github.com/openvinotoolkit/openvino.genai/issues
+    about: Problems in OpenVINO or the NPU runtime that also happen outside this project. / 本プロジェクト以外でも起きる OpenVINO や NPU ランタイムの問題はこちらへ。
