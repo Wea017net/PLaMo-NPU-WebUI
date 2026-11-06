@@ -38,6 +38,14 @@ const I18N = {
   translate:  ["翻訳", "Translate", "翻译", "번역", "Traduire", "Übersetzen", "Traducir"],
   instant:    ["即時翻訳", "Instant translation", "即时翻译", "즉시 번역", "Traduction instantanée", "Sofortübersetzung", "Traducción instantánea"],
   instant_title: ["入力と同時に翻訳する", "Translate as you type", "输入时自动翻译", "입력과 동시에 번역", "Traduire pendant la saisie", "Beim Tippen übersetzen", "Traducir mientras escribe"],
+  form_title: ["日本語訳の文体", "Style of the Japanese translation", "日语译文的文体", "일본어 번역문의 문체", "Style de la traduction japonaise", "Stil der japanischen Übersetzung", "Estilo de la traducción al japonés"],
+  form_btn:   ["文体: {v}", "Style: {v}", "文体：{v}", "문체: {v}", "Style : {v}", "Stil: {v}", "Estilo: {v}"],
+  form_auto:  ["自動", "Auto", "自动", "자동", "Auto", "Automatisch", "Automático"],
+  form_polite:["敬体", "Polite", "敬体", "경어체", "Poli", "Höflich", "Cortés"],
+  form_plain: ["常体", "Plain", "常体", "평어체", "Neutre", "Neutral", "Neutro"],
+  form_auto_full:   ["自動（指定しない）", "Auto (not specified)", "自动（不指定）", "자동 (지정 안 함)", "Auto (non précisé)", "Automatisch (nicht festgelegt)", "Automático (sin especificar)"],
+  form_polite_full: ["敬体（です・ます調）", "Polite (です・ます)", "敬体（です・ます体）", "경어체 (です・ます체)", "Poli (です・ます)", "Höflich (です・ます)", "Cortés (です・ます)"],
+  form_plain_full:  ["常体（だ・である調）", "Plain (だ・である)", "常体（だ・である体）", "평어체 (だ・である체)", "Neutre (だ・である)", "Neutral (だ・である)", "Neutro (だ・である)"],
   out_ph:     ["翻訳", "Translation", "译文", "번역", "Traduction", "Übersetzung", "Traducción"],
   copy:       ["訳文をコピー", "Copy translation", "复制译文", "번역문 복사", "Copier la traduction", "Übersetzung kopieren", "Copiar traducción"],
   copied:     ["訳文をコピーしました", "Translation copied", "已复制译文", "번역문을 복사했습니다", "Traduction copiée", "Übersetzung kopiert", "Traducción copiada"],
@@ -115,24 +123,49 @@ export function t(key, params = {}) {
   return s;
 }
 
-// 翻訳対象の言語名は Intl.DisplayNames で表示言語に合わせる（使えなければ日本語名）
-export const LANG_CODES = ["ja", "en", "zh", "ko", "fr", "de", "es"];
-const JA_NAMES = { ja: "日本語", en: "英語", zh: "中国語", ko: "韓国語", fr: "フランス語", de: "ドイツ語", es: "スペイン語" };
+// 翻訳できる言語（PLaMo 3 Translate の対応 53 言語。コードはモデルカードの「対応言語」の表のとおり）
+// 名前は Intl.DisplayNames で表示言語に合わせる（使えなければ日本語名）
+const JA_NAMES = {
+  ja: "日本語", en: "英語", "zh-hans": "中国語（簡体字）", "zh-hant": "中国語（繁体字）", ko: "韓国語",
+  ar: "アラビア語", az: "アゼルバイジャン語", be: "ベラルーシ語", bg: "ブルガリア語", bn: "ベンガル語",
+  ca: "カタルーニャ語", ceb: "セブアノ語", de: "ドイツ語", es: "スペイン語", et: "エストニア語",
+  eu: "バスク語", fa: "ペルシャ語", fr: "フランス語", gu: "グジャラート語", he: "ヘブライ語",
+  hi: "ヒンディー語", hr: "クロアチア語", hu: "ハンガリー語", hy: "アルメニア語", id: "インドネシア語",
+  it: "イタリア語", jv: "ジャワ語", ka: "ジョージア語", kk: "カザフ語", km: "クメール語",
+  lt: "リトアニア語", lv: "ラトビア語", ml: "マラヤーラム語", mr: "マラーティー語", ms: "マレー語",
+  my: "ミャンマー語", ne: "ネパール語", nl: "オランダ語", pa: "パンジャーブ語", pl: "ポーランド語",
+  ru: "ロシア語", si: "シンハラ語", sk: "スロバキア語", sl: "スロベニア語", sr: "セルビア語",
+  sw: "スワヒリ語", ta: "タミル語", te: "テルグ語", th: "タイ語", tl: "タガログ語",
+  ur: "ウルドゥー語", uz: "ウズベク語", vi: "ベトナム語",
+};
+const PINNED = ["ja", "en", "zh-hans", "zh-hant", "ko"];   // 一覧の先頭に固定（残りは表示言語での名前順）
+const ALL_CODES = Object.keys(JA_NAMES);
+export const RTL_LANGS = new Set(["ar", "fa", "he", "ur"]);
+export const isLangCode = (code) => Object.hasOwn(JA_NAMES, code);
+
+export let LANG_CODES = ALL_CODES;   // 一覧に並べる順（表示言語が変わると並べ直す）
 let names = {};
 function buildNames() {
   let dn = null;
   try { dn = new Intl.DisplayNames([locale], { type: "language" }); } catch { /* 古いブラウザ */ }
-  names = Object.fromEntries(LANG_CODES.map((c) => {
-    let n = dn ? dn.of(c) : JA_NAMES[c];
-    if (ui !== "ja" && n) n = n.charAt(0).toLocaleUpperCase(locale) + n.slice(1);   // français → Français
-    return [c, n || JA_NAMES[c]];
+  names = Object.fromEntries(ALL_CODES.map((c) => {
+    let n = null;
+    try { n = dn?.of(c); } catch { /* 知らないコード */ }
+    if (!n || n.toLowerCase() === c) return [c, JA_NAMES[c]];   // 名前が無ければ日本語名
+    if (ui !== "ja") n = n.charAt(0).toLocaleUpperCase(locale) + n.slice(1);   // français → Français
+    return [c, n];
   }));
+  const coll = new Intl.Collator(locale);
+  const rest = ALL_CODES.filter((c) => !PINNED.includes(c)).sort((a, b) => coll.compare(names[a], names[b]));
+  LANG_CODES = [...PINNED, ...rest];
 }
 buildNames();
 export const langName = (code) => names[code] ?? code;
 
 // <html lang> は CSS の :lang() による書体の切り替えにも使う
-export const htmlLang = (code) => (code === "zh" ? "zh-CN" : code);
+// （"zh" は表示言語の簡体中文、"zh-hans" / "zh-hant" は翻訳先の中国語）
+const HTML_LANG = { zh: "zh-CN", "zh-hans": "zh-Hans", "zh-hant": "zh-Hant" };
+export const htmlLang = (code) => HTML_LANG[code] ?? code;
 
 const listeners = [];
 export const onUiLangChange = (fn) => listeners.push(fn);

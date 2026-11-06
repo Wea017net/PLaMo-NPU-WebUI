@@ -50,10 +50,28 @@
      言語ごとの指定は下の :lang() で上書きする */
   --font: "Noto Sans", sans-serif;
 }
+/* lang の付いた要素では親の指定を引き継がずに既定へ戻す（ラテン文字・キリル文字の言語は "Noto Sans"） */
+[lang] { --font: "Noto Sans", sans-serif; }
 :lang(ja) { --font: "Noto Sans JP", sans-serif; }
 :lang(zh) { --font: "Noto Sans SC", sans-serif; }
+:lang(zh-Hant) { --font: "Noto Sans TC", sans-serif; }
 :lang(ko) { --font: "Noto Sans KR", sans-serif; }
-:lang(en), :lang(fr), :lang(de), :lang(es) { --font: "Noto Sans", sans-serif; }
+/* ラテン文字・キリル文字以外の文字体系は、その文字用の Noto Sans を使う */
+:lang(ar), :lang(fa), :lang(ur) { --font: "Noto Sans Arabic", sans-serif; }
+:lang(he) { --font: "Noto Sans Hebrew", sans-serif; }
+:lang(hi), :lang(mr), :lang(ne) { --font: "Noto Sans Devanagari", sans-serif; }
+:lang(bn) { --font: "Noto Sans Bengali", sans-serif; }
+:lang(gu) { --font: "Noto Sans Gujarati", sans-serif; }
+:lang(pa) { --font: "Noto Sans Gurmukhi", sans-serif; }
+:lang(ta) { --font: "Noto Sans Tamil", sans-serif; }
+:lang(te) { --font: "Noto Sans Telugu", sans-serif; }
+:lang(ml) { --font: "Noto Sans Malayalam", sans-serif; }
+:lang(si) { --font: "Noto Sans Sinhala", sans-serif; }
+:lang(th) { --font: "Noto Sans Thai", sans-serif; }
+:lang(km) { --font: "Noto Sans Khmer", sans-serif; }
+:lang(my) { --font: "Noto Sans Myanmar", sans-serif; }
+:lang(ka) { --font: "Noto Sans Georgian", sans-serif; }
+:lang(hy) { --font: "Noto Sans Armenian", sans-serif; }
 /* ダークテーマ: 手動切り替え（data-theme）を優先し、未指定なら OS 設定に従う */
 :root[data-theme="dark"] {
   color-scheme: dark;
@@ -267,6 +285,14 @@ body, .card, .appbar, .pane.dst, .tab, .chip { transition: background-color .2s 
   animation: menu-in .12s var(--ease);
 }
 .menu[hidden] { display: none; }
+/* 翻訳言語の一覧は 53 言語あるので、幅に合わせて段組みし、高さを抑えてスクロールさせる */
+.lang-side .menu {
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  max-height: min(60vh, 440px);
+  overflow-y: auto; overscroll-behavior: contain;
+}
+.lang-side .menu-item { height: 40px; font-size: 14px; gap: 8px; padding: 0 12px; }
+.lang-side .menu-item span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @keyframes menu-in { from { opacity: 0; transform: scale(.9); } }
 .menu-item {
   appearance: none; border: none; background: none; cursor: pointer;
@@ -334,6 +360,33 @@ textarea::placeholder { color: var(--on-surface-disabled); }
   padding: 4px 8px 8px 24px;
 }
 .pane-foot .spacer { flex: 1; }
+
+/* 文体ドロップダウン（M2 の outlined 風ボタン + メニュー。下端にあるのでメニューは上に開く） */
+.form-select { position: relative; flex: none; }
+.form-select[hidden] { display: none; }
+.dropdown {
+  appearance: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 32px; padding: 0 4px 0 8px;
+  border: 1px solid var(--divider); border-radius: var(--radius);
+  background: transparent;
+  color: var(--on-surface);
+  font: inherit; font-size: 13px; font-weight: 500; letter-spacing: .03em;
+  white-space: nowrap;
+  transition: background .15s var(--ease), border-color .15s var(--ease);
+}
+.dropdown .mi { font-size: 18px; color: var(--on-surface-medium); }
+.dropdown .arrow { font-size: 20px; transition: transform .2s var(--ease); }
+.dropdown:hover { background: var(--overlay-hover); }
+.dropdown:focus-visible { outline: none; background: var(--primary-hover); border-color: var(--primary); }
+.dropdown[aria-expanded="true"] { border-color: var(--primary); }
+.dropdown[aria-expanded="true"] .arrow { transform: rotate(180deg); }
+.menu.form-menu {
+  top: auto; bottom: 40px; left: 0;
+  width: max-content; min-width: 220px;
+  grid-template-columns: minmax(0, 1fr);
+  transform-origin: bottom left;
+}
 .caption { font-size: 12px; color: var(--on-surface-medium); letter-spacing: .033em; font-variant-numeric: tabular-nums; }
 
 /* linear progress (indeterminate) */
