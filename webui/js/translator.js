@@ -6,7 +6,6 @@ import { API_BASE, BACKEND } from "./config.js";
 
 const AUTO = "auto";
 const RECENT_N = 3;                      // タブに出す最近使った言語の数
-const TAB_EXCLUDE = new Set(["zh-hans", "zh-hant"]);   // 上部のタブには出さない（▼ の全一覧からは選べる）
 const KBD = "<kbd>Ctrl</kbd> + <kbd>Enter</kbd>";
 // 日本語訳の文体（PLaMo の form 引数。auto は指定しない＝モデル任せ）
 const FORMS = ["auto", "polite", "plain"];
@@ -34,7 +33,7 @@ const loadRecent = (key, fallback) => {
   try {
     const v = JSON.parse(store.get(key, ""));
     if (Array.isArray(v)) {
-      const list = v.filter((c) => isLangCode(c) && !TAB_EXCLUDE.has(c)).slice(0, RECENT_N);
+      const list = v.filter((c) => isLangCode(c)).slice(0, RECENT_N);
       if (list.length) return list;
     }
   } catch { /* 壊れた値は無視 */ }
@@ -47,7 +46,7 @@ const recent = {
 };
 
 function promote(side, code) {
-  if (code === AUTO || TAB_EXCLUDE.has(code)) return;
+  if (code === AUTO) return;
   const list = recent[side];
   if (!list.includes(code)) {
     list.unshift(code);
@@ -94,7 +93,7 @@ function menuItem(code, current, side) {
 function buildSide(side) {
   const current = side === "src" ? srcLang : dstLang;
   const items = (side === "src" ? [AUTO] : []).concat(recent[side]);
-  // タブに出さない言語（中国語）を選んでいるときだけ、選択中だと分かるよう一時的に表示する
+  // 念のため、選択中の言語がタブに無ければ末尾に出す
   if (current !== AUTO && !items.includes(current)) items.push(current);
 
   const tabs = items.map((code) => {
