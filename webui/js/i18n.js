@@ -78,6 +78,16 @@ const I18N = {
   driver:     ["ドライバー {v}", "Driver {v}", "驱动 {v}", "드라이버 {v}", "Pilote {v}", "Treiber {v}", "Controlador {v}"],
   alloc:      ["割り当て上限 {v} GB", "Allocation limit {v} GB", "分配上限 {v} GB", "할당 한도 {v} GB", "Limite d'allocation {v} GB", "Zuweisungslimit {v} GB", "Límite de asignación {v} GB"],
   mem_sub:    ["共有 {s} GB · 専用 {d} GB · {c} GB 中 {p}%", "Shared {s} GB · Dedicated {d} GB · {p}% of {c} GB", "共享 {s} GB · 专用 {d} GB · 占 {c} GB 的 {p}%", "공유 {s} GB · 전용 {d} GB · {c} GB 중 {p}%", "Partagée {s} GB · Dédiée {d} GB · {p} % de {c} GB", "Geteilt {s} GB · Dediziert {d} GB · {p} % von {c} GB", "Compartida {s} GB · Dedicada {d} GB · {p} % de {c} GB"],
+  // ---- サーバー停止
+  stop_server:["サーバーを停止", "Stop server", "停止服务器", "서버 중지", "Arrêter le serveur", "Server beenden", "Detener el servidor"],
+  stop_title: ["翻訳サーバーを停止しますか？", "Stop the translation server?", "要停止翻译服务器吗？", "번역 서버를 중지할까요?", "Arrêter le serveur de traduction ?", "Übersetzungsserver beenden?", "¿Detener el servidor de traducción?"],
+  stop_body:  ["サーバーを終了して、NPU とメモリを解放します。再び使うには {cmd} を実行してください。", "The server will exit and free the NPU and memory. Run {cmd} to use it again.", "服务器将退出并释放 NPU 和内存。如需再次使用，请运行 {cmd}。", "서버를 종료하고 NPU와 메모리를 해제합니다. 다시 사용하려면 {cmd}을(를) 실행하세요.", "Le serveur va s'arrêter et libérer le NPU et la mémoire. Lancez {cmd} pour l'utiliser à nouveau.", "Der Server wird beendet und gibt NPU und Arbeitsspeicher frei. Starten Sie {cmd}, um ihn wieder zu verwenden.", "El servidor se cerrará y liberará la NPU y la memoria. Ejecute {cmd} para volver a usarlo."],
+  stop_ok:    ["停止", "Stop", "停止", "중지", "Arrêter", "Beenden", "Detener"],
+  cancel:     ["キャンセル", "Cancel", "取消", "취소", "Annuler", "Abbrechen", "Cancelar"],
+  stopped:    ["サーバーを停止しました", "Server stopped", "服务器已停止", "서버를 중지했습니다", "Serveur arrêté", "Server beendet", "Servidor detenido"],
+  stop_failed:["サーバーを停止できませんでした", "Couldn't stop the server", "无法停止服务器", "서버를 중지하지 못했습니다", "Impossible d'arrêter le serveur", "Server konnte nicht beendet werden", "No se pudo detener el servidor"],
+  st_stopped: ["停止済み", "Stopped", "已停止", "중지됨", "Arrêté", "Beendet", "Detenido"],
+  banner_stopped: ["翻訳サーバーを停止しました。再び使うには {cmd} を実行してください。", "The translation server has been stopped. Run {cmd} to use it again.", "翻译服务器已停止。如需再次使用，请运行 {cmd}。", "번역 서버를 중지했습니다. 다시 사용하려면 {cmd}을(를) 실행하세요.", "Le serveur de traduction est arrêté. Lancez {cmd} pour l'utiliser à nouveau.", "Der Übersetzungsserver wurde beendet. Starten Sie {cmd}, um ihn wieder zu verwenden.", "El servidor de traducción se ha detenido. Ejecute {cmd} para volver a usarlo."],
   fetching:   ["取得中…", "Fetching…", "获取中…", "가져오는 중…", "Récupération…", "Wird abgerufen…", "Obteniendo…"],
 
   // ---- フッター・ライセンスダイアログ

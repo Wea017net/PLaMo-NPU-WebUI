@@ -19,6 +19,7 @@
   <span class="spacer"></span>
   <span class="status" id="status" data-state="checking"><span class="dot"></span><span id="status-text"></span></span>
   <div class="actions">
+    <button class="icon-btn bar-btn ripple" id="power" hidden data-i18n-attr="title:stop_server,aria-label:stop_server"><span class="mi">power_settings_new</span></button>
     <div class="ui-lang">
       <button class="icon-btn bar-btn ripple" id="ui-lang" aria-haspopup="menu" aria-expanded="false" data-i18n-attr="title:ui_lang,aria-label:ui_lang"><span class="mi">language</span></button>
       <div class="menu ui-menu" id="ui-menu" role="menu" hidden></div>
@@ -166,6 +167,15 @@
   <div class="dialog-body" id="about-body"></div>
   <div class="actions">
     <button class="text-btn" id="about-close" data-i18n="close"></button>
+  </div>
+</dialog>
+
+<dialog class="dialog confirm" id="stop-dialog" aria-labelledby="stop-title" aria-describedby="stop-body">
+  <h2 id="stop-title" data-i18n="stop_title"></h2>
+  <div class="dialog-body" id="stop-body"></div>
+  <div class="actions">
+    <button class="text-btn" id="stop-cancel" data-i18n="cancel"></button>
+    <button class="text-btn" id="stop-ok" data-i18n="stop_ok"></button>
   </div>
 </dialog>
 

@@ -6,6 +6,7 @@
 - POST /v1/chat/completions                  … OpenAI 互換（stream 対応、chat_template_kwargs で
                                                 target_lang / source_lang / form / context / glossary）
 - GET  /health  /props  /v1/models  /api/stats
+- POST /api/shutdown                         … サーバーを終了する（Web UI の停止ボタン。同じ PC の同じオリジンからのみ）
 
 llama-server と同じ形の timings（prompt_n, predicted_per_second など）を最後のチャンクに付ける。
 NPU のパイプラインは 1 本なので同時に 1 リクエストだけ処理し、新しいリクエストが来たら
@@ -18,6 +19,7 @@ import argparse
 import ctypes
 import json
 import os
+import socket
 import subprocess
 import sys
 import threading
@@ -25,6 +27,8 @@ import time
 import traceback
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from ipaddress import ip_address
+from urllib.parse import urlsplit
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent          # リポジトリのルート
@@ -379,8 +383,42 @@ class Handler(SimpleHTTPRequestHandler):
                       "load_seconds": p["load_seconds"], "metrics": metrics},
         }
 
+    def _shutdown_allowed(self):
+        """停止できるのは、この PC 上で開いた Web UI からの要求だけにする。
+
+        - 接続元がループバック（--host 0.0.0.0 で公開していても、他の PC からは止められない）
+        - Host が localhost / 127.0.0.1 / [::1]（DNS リバインディング対策）
+        - Origin があるなら、このサーバー自身と同じオリジン
+        - 独自ヘッダー X-PLaMo-Action: shutdown が付いている（他サイトから送るにはプリフライトが必要だが、
+          do_OPTIONS はこのヘッダーを許可していないのでブラウザが送らない）
+        """
+        try:
+            if not ip_address(self.client_address[0]).is_loopback:
+                return False
+        except ValueError:
+            return False
+        host = self.headers.get("Host", "")
+        if urlsplit(f"//{host}").hostname not in ("localhost", "127.0.0.1", "::1"):
+            return False
+        origin = self.headers.get("Origin")
+        if origin is not None and origin != f"http://{host}":
+            return False
+        return self.headers.get("X-PLaMo-Action") == "shutdown"
+
+    def _shutdown(self):
+        if not self._shutdown_allowed():
+            return self._error(403, "Shutdown is only allowed from the web UI on this PC.", "forbidden")
+        print("Shutdown requested from the web UI.", flush=True)
+        self.close_connection = True
+        self._json(200, {"status": "stopping"})
+        self.wfile.flush()
+        # serve_forever() と同じスレッドから shutdown() を呼ぶと止まらないので、別スレッドで呼ぶ
+        threading.Thread(target=self.server.shutdown, daemon=True).start()
+
     def do_POST(self):
         path = self.path.split("?")[0]
+        if path == "/api/shutdown":
+            return self._shutdown()
         if path not in ("/v1/chat/completions", "/chat/completions"):
             return self._error(404, "Not found")
         try:
@@ -458,6 +496,18 @@ class Handler(SimpleHTTPRequestHandler):
                 pass
 
 
+class Server(ThreadingHTTPServer):
+    daemon_threads = True
+    # Windows の SO_REUSEADDR は使用中のポートにも重ねて bind できてしまい、2 つ目のサーバーが
+    # エラーなしで起動してしまう。Windows では代わりに SO_EXCLUSIVEADDRUSE でポートを占有する。
+    allow_reuse_address = sys.platform != "win32"
+
+    def server_bind(self):
+        if sys.platform == "win32":
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
+
+
 def main():
     global ARGS
     ap = argparse.ArgumentParser()
@@ -474,16 +524,23 @@ def main():
     if not (ARGS.model_dir / "openvino_model.xml").exists():
         sys.exit(f"Model not found: {ARGS.model_dir}")
 
+    try:
+        httpd = Server((ARGS.host, ARGS.port), partial(Handler, directory=str(WEBUI_DIR)))
+    except OSError as e:
+        sys.exit(f"Cannot listen on {ARGS.host}:{ARGS.port} ({e.strerror or e}). "
+                 "The server may already be running, or another app is using the port (try -Port).")
     threading.Thread(target=detect_device, daemon=True).start()
     threading.Thread(target=load_model, daemon=True).start()
-    httpd = ThreadingHTTPServer((ARGS.host, ARGS.port), partial(Handler, directory=str(WEBUI_DIR)))
-    httpd.daemon_threads = True
     print(f"PLaMo NPU server: http://{ARGS.host}:{ARGS.port}/  (model={ARGS.model_dir.name}, device={ARGS.device})",
           flush=True)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
+    httpd.server_close()
+    print("Server stopped.", flush=True)
+    # 生成中のスレッドや OpenVINO のスレッドが残っていても確実に終わらせる（NPU とメモリは OS が解放する）
+    os._exit(0)
 
 
 if __name__ == "__main__":

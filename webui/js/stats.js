@@ -11,6 +11,7 @@ let deviceName = "";
 let statusKey = "st_checking";
 let isBusy = () => false;    // 翻訳中かどうか（translator.js から渡される）
 let statsOpen = store.get("plamo.stats", "open") !== "closed";
+let stopped = false;         // 停止ボタンでサーバーを止めた（再び応答するまで「停止済み」と表示する）
 
 const gb = (b) => (b / 1024 ** 3).toFixed(b >= 10 * 1024 ** 3 ? 1 : 2);
 const pct = (a, b) => (b ? Math.min(100, (a / b) * 100) : 0);
@@ -49,15 +50,28 @@ function setStatus(state, key) {
   $("banner").classList.toggle("show", state === "offline");
 }
 
+function renderBanner() {
+  const key = stopped ? `banner_stopped` : `banner_${BACKEND}`;
+  $("banner-text").innerHTML = t(key, { cmd: `<code>${escapeHtml(START_CMD)}</code>` });
+}
+
+// 停止ボタンでサーバーを止めたあとに呼ぶ
+export function markStopped() {
+  stopped = true;
+  renderBanner();
+  setStatus("offline", "st_stopped");
+}
+
 export async function pollStats() {
   let s;
   try {
     const r = await fetch(STATS_URL, { cache: "no-store" });
     s = await r.json();
   } catch {
-    setStatus("offline", "st_nostats");
+    setStatus("offline", stopped ? "st_stopped" : "st_nostats");
     return;
   }
+  if (stopped) { stopped = false; renderBanner(); }   // 起動し直された
   const L = s.llama || {}, P = s.process || {}, S = s.system || {}, G = s.gpu || {};
   const M = L.metrics || {};
 
@@ -149,7 +163,7 @@ function renderCollapse() {
 export function renderStats() {
   for (const el of document.querySelectorAll(".dev-name")) el.textContent = DEVICE_LABEL;
   for (const el of document.querySelectorAll(".proc-name")) el.textContent = processLabel();
-  $("banner-text").innerHTML = t(`banner_${BACKEND}`, { cmd: `<code>${escapeHtml(START_CMD)}</code>` });
+  renderBanner();
   if (!deviceName) $("gpu-name").textContent = t("detecting");
   setStatus($("status").dataset.state, statusKey);
   renderCollapse();
