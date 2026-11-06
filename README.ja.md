@@ -101,7 +101,8 @@ curl http://127.0.0.1:8100/v1/chat/completions -H "Content-Type: application/jso
 `chat_template_kwargs` には、モデルのチャットテンプレートと同じく `target_lang`（必須）、`source_lang`、
 `form`（`polite` / `plain`、日本語のみ）、`context`、`glossary`（`[{"source": "...", "target": "..."}]`）を指定できます。
 `"stream": true` で Server-Sent Events になり、最後のチャンクに llama.cpp と同じ形の `timings` が付きます。
-ほかのエンドポイント: `GET /health`、`/props`、`/v1/models`、`/api/stats`。
+ほかのエンドポイント: `GET /health`、`/props`、`/v1/models`、`/api/stats`、`POST /api/shutdown`（Web UI の停止ボタン用。
+同じ PC・同じオリジンから `X-PLaMo-Action: shutdown` ヘッダー付きで送った場合だけ受け付けます）。
 
 ## 制限事項
 

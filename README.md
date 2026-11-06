@@ -100,7 +100,8 @@ curl http://127.0.0.1:8100/v1/chat/completions -H "Content-Type: application/jso
 `chat_template_kwargs` accepts `target_lang` (required), `source_lang`, `form` (`polite`/`plain`, Japanese only),
 `context` and `glossary` (`[{"source": "...", "target": "..."}]`), as in the model's chat template.
 Set `"stream": true` for server-sent events; the last chunk includes llama.cpp-style `timings`.
-Other endpoints: `GET /health`, `/props`, `/v1/models`, `/api/stats`.
+Other endpoints: `GET /health`, `/props`, `/v1/models`, `/api/stats`, and `POST /api/shutdown` (used by the web UI's
+stop button; accepted only from the same PC and origin with the `X-PLaMo-Action: shutdown` header).
 
 ## Limitations
 
