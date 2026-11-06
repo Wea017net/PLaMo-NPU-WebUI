@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>PLaMo Translate (NPU)</title>
+<script src="js/theme-init.js"></script>
+<link rel="preload" href="assets/fonts/MaterialSymbolsOutlined.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<script type="module" src="js/main.js"></script>
+</head>
+<body>
+<header class="appbar">
+  <span class="mi" aria-hidden="true">translate</span>
+  <h1><span data-i18n="app">PLaMo Translate</span><small id="backend-tag" style="font-weight:400;opacity:.7;margin-left:6px" hidden>NPU</small></h1>
+  <span class="model" id="model-top"></span>
+  <span class="spacer"></span>
+  <span class="status" id="status" data-state="checking"><span class="dot"></span><span id="status-text"></span></span>
+  <div class="actions">
+    <div class="ui-lang">
+      <button class="icon-btn bar-btn ripple" id="ui-lang" aria-haspopup="menu" aria-expanded="false" data-i18n-attr="title:ui_lang,aria-label:ui_lang"><span class="mi">language</span></button>
+      <div class="menu ui-menu" id="ui-menu" role="menu" hidden></div>
+    </div>
+    <button class="icon-btn bar-btn theme-btn ripple" id="theme"><span class="mi">light_mode</span></button>
+  </div>
+</header>
+
+<main class="container">
+  <div class="banner" id="banner" role="alert">
+    <span class="mi">error</span>
+    <span id="banner-text"></span>
+  </div>
+
+  <section class="card translator">
+    <div class="langbar">
+      <div class="lang-side">
+        <div class="tabs" id="src-tabs" role="tablist" data-i18n-attr="aria-label:src_langs"></div>
+        <div class="menu" id="src-menu" role="menu" hidden></div>
+      </div>
+      <button class="icon-btn swap ripple" id="swap" data-i18n-attr="title:swap,aria-label:swap"><span class="mi">swap_horiz</span></button>
+      <div class="lang-side">
+        <div class="tabs" id="dst-tabs" role="tablist" data-i18n-attr="aria-label:dst_langs"></div>
+        <div class="menu" id="dst-menu" role="menu" hidden></div>
+      </div>
+    </div>
+
+    <div class="panes">
+      <div class="pane src">
+        <textarea id="src" data-i18n-attr="placeholder:input_ph,aria-label:src_text"></textarea>
+        <button class="icon-btn clear ripple" id="clear" data-i18n-attr="title:clear,aria-label:clear"><span class="mi">close</span></button>
+        <div class="pane-foot">
+          <span class="caption" id="counter"></span>
+          <span class="spacer"></span>
+          <button class="btn ripple" id="go" hidden><span class="mi">translate</span><span data-i18n="translate"></span></button>
+          <button class="switch" id="instant" role="switch" aria-checked="true" data-i18n-attr="title:instant_title">
+            <span class="switch-label" data-i18n="instant"></span>
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pane dst" aria-live="polite">
+        <div class="progress" id="progress"></div>
+        <div class="output placeholder" id="out"></div>
+        <div class="pane-foot">
+          <div class="chips" id="chips"></div>
+          <span class="spacer"></span>
+          <button class="icon-btn ripple" id="copy" data-i18n-attr="title:copy,aria-label:copy" disabled><span class="mi">content_copy</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="caption hint" id="hint"></div>
+
+  <h2 class="section-title">
+    <button class="section-toggle" id="stats-toggle" aria-expanded="true" aria-controls="stats-body">
+      <span class="mi">insights</span><span data-i18n="stats"></span><span class="mi chevron">expand_less</span>
+    </button>
+    <span class="caption" id="updated">—</span>
+  </h2>
+  <div class="collapse" id="stats-body">
+    <div class="collapse-inner">
+      <div class="stats">
+        <div class="card stat">
+          <div class="overline"><span class="mi">memory</span><span class="dev-name"></span></div>
+          <div class="value name" id="gpu-name"></div>
+          <div class="body2" id="gpu-meta">—</div>
+        </div>
+
+        <div class="card stat">
+          <div class="overline"><span class="mi">sd_card</span><span data-i18n="dev_mem"></span></div>
+          <div class="value" id="gpu-mem">—</div>
+          <div class="bar"><span id="gpu-mem-bar"></span></div>
+          <div class="body2" id="gpu-mem-sub">—</div>
+        </div>
+
+        <div class="card stat">
+          <div class="overline"><span class="mi">show_chart</span><span data-i18n="dev_util"></span></div>
+          <div class="value" id="gpu-util">—</div>
+          <svg class="spark" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
+            <path class="area" id="spark-area" d=""></path>
+            <path class="line" id="spark-line" d=""></path>
+          </svg>
+        </div>
+
+        <div class="card stat">
+          <div class="overline"><span class="mi">storage</span><span data-i18n="memory"></span></div>
+          <div class="kv" style="margin-top:12px"><span class="k proc-name"></span><span class="v" id="proc-ws">—</span></div>
+          <div class="bar"><span id="proc-bar"></span></div>
+          <div class="kv"><span class="k" data-i18n="system"></span><span class="v" id="sys-mem">—</span></div>
+          <div class="bar"><span id="sys-bar"></span></div>
+        </div>
+
+        <div class="card stat">
+          <div class="overline"><span class="mi">speed</span><span data-i18n="speed"></span></div>
+          <div class="duo">
+            <div>
+              <div class="value" id="gen-speed">—</div>
+              <div class="body2" data-i18n="gen_tps"></div>
+            </div>
+            <div>
+              <div class="value" id="prompt-speed">—</div>
+              <div class="body2" data-i18n="prompt_tps"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card stat">
+          <div class="overline"><span class="mi">functions</span><span data-i18n="totals"></span></div>
+          <div class="kv" style="margin-top:12px"><span class="k" data-i18n="in_tok"></span><span class="v" id="tot-prompt">—</span></div>
+          <div class="kv"><span class="k" data-i18n="out_tok"></span><span class="v" id="tot-pred">—</span></div>
+          <div class="kv"><span class="k" data-i18n="req_proc"></span><span class="v" id="req-proc">—</span></div>
+        </div>
+
+        <div class="card stat">
+          <div class="overline"><span class="mi">inventory_2</span><span data-i18n="model"></span></div>
+          <div class="kv" style="margin-top:12px"><span class="k" data-i18n="file"></span><span class="v" id="m-file">—</span></div>
+          <div class="kv"><span class="k" data-i18n="quant"></span><span class="v" id="m-ftype">—</span></div>
+          <div class="kv"><span class="k" data-i18n="ctx"></span><span class="v" id="m-ctx">—</span></div>
+          <div class="kv"><span class="k" data-i18n="slots"></span><span class="v" id="m-slots">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span class="built">Built with PLaMo</span>
+    <span data-i18n="unofficial"></span>
+    <span data-i18n="mt_notice"></span>
+    <span class="spacer"></span>
+    <button class="text-btn" id="about-btn"><span class="mi">info</span><span data-i18n="about"></span></button>
+  </footer>
+</main>
+
+<dialog class="dialog" id="about" aria-labelledby="about-title">
+  <h2 id="about-title" data-i18n="about"></h2>
+  <div class="dialog-body" id="about-body"></div>
+  <div class="actions">
+    <button class="text-btn" id="about-close" data-i18n="close"></button>
+  </div>
+</dialog>
+
+<div class="snackbar" id="snackbar" role="status"></div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Normalize text files to LF in the repository
+* text=auto
+
+# Windows scripts need CRLF on checkout (cmd.exe misparses LF-only .bat files)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets
+*.woff2 binary

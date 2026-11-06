@@ -1,0 +1,18 @@
+# Tested on Windows 11 / Python 3.10 / Intel Core Ultra 7 258V (Lunar Lake)
+# PyTorch is only used to convert the model; the CPU build is enough.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# runtime (server)
+openvino==2026.4.1
+openvino-genai==2026.4.1.0
+transformers==5.5.4          # PLaMo tokenizer (trust_remote_code)
+numba==0.68.1                # required by the PLaMo tokenizer
+numpy==2.2.6
+
+# model conversion (tools/)
+torch==2.14.1
+safetensors==0.8.0
+huggingface_hub==1.21.0
+optimum==2.3.0
+optimum-intel==2.2.0
+nncf==3.4.0

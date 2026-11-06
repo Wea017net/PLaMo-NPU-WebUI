@@ -1,0 +1,25 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# caches (pip, Hugging Face, OpenVINO compiled blobs)
+.cache/
+
+# model weights — never commit these (PLaMo Community License; users build them locally)
+hf/
+models/
+work/
+*.safetensors
+*.bin
+*.gguf
+*.blob
+*.pt
+
+# OS / editors
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

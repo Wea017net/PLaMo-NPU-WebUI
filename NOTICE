@@ -1,0 +1,18 @@
+PLaMo NPU WebUI
+Copyright 2026 Wea017net
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Built with PLaMo.
+This software runs PLaMo 3 Translate (pfnet/plamo-3-translate-2b) by Preferred Networks, Inc.,
+which is licensed separately under the PLaMo Community License
+(https://plamo.preferredai.jp/info/plamo-community-license-en). The model is not included in
+this repository; users download it themselves.
+
+This product bundles the Material Symbols icon font by Google LLC, licensed under the
+Apache License, Version 2.0 (webui/assets/fonts/LICENSE-MaterialSymbols.txt).
+
+This is an unofficial, third-party project and is not affiliated with, sponsored by, or
+endorsed by Preferred Networks, Inc. or Intel Corporation.
+
+See THIRD_PARTY_NOTICES.md for details.
