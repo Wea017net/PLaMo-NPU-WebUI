@@ -3,13 +3,14 @@
 
 import { $, escapeHtml } from "./util.js";
 import { t } from "./i18n.js";
+import { APP_VERSION } from "./config.js";
 
 const PLAMO_LICENSE = "https://plamo.preferredai.jp/info/plamo-community-license-en";
 const PLAMO_MODEL = "https://huggingface.co/pfnet/plamo-3-translate-2b";
 
 // [名前, ライセンス, 著作権者, 補足（i18n キー）, リンク]
 const COMPONENTS = [
-  ["PLaMo NPU WebUI", "Apache License 2.0", "Wea017net", "lic_app", null],
+  [`PLaMo NPU WebUI v${APP_VERSION}`, "Apache License 2.0", "Wea017net", "lic_app", null],
   ["PLaMo 3 Translate 2B (pfnet/plamo-3-translate-2b)", "PLaMo Community License", "Preferred Networks, Inc.", "lic_model", PLAMO_LICENSE],
   ["Material Symbols", "Apache License 2.0", "Google LLC", "lic_bundled", "assets/fonts/LICENSE-MaterialSymbols.txt"],
   ["Noto Sans / Noto Sans JP / SC / KR", "SIL Open Font License 1.1", "Google LLC", "lic_system", null],

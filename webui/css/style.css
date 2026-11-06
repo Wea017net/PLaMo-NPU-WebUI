@@ -583,6 +583,7 @@ code { font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
 }
 .footer .built { font-weight: 500; color: var(--on-surface); }
 .footer .spacer { flex: 1; }
+.footer .version { font-variant-numeric: tabular-nums; }
 .text-btn {
   appearance: none; border: none; background: none; cursor: pointer;
   display: inline-flex; align-items: center; gap: 6px;
