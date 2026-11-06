@@ -2,6 +2,9 @@
 
 **English** | [日本語](README.ja.md)
 
+> [!IMPORTANT]
+> This is 100% Vibe-coded repository.
+
 Run [PLaMo 3 Translate 2B](https://huggingface.co/pfnet/plamo-3-translate-2b) by Preferred Networks on the
 **Intel NPU (Intel® AI Boost)** of Intel Core Ultra PCs — fully offline, with a browser-based translation UI.
 
@@ -15,11 +18,6 @@ Run [PLaMo 3 Translate 2B](https://huggingface.co/pfnet/plamo-3-translate-2b) by
 
 - **Runs on the NPU** with [OpenVINO GenAI](https://github.com/openvinotoolkit/openvino.genai). The GPU and most of the CPU stay free.
 - **Offline**: after setup, nothing is sent to or loaded from the internet (no web fonts, no CDNs).
-- **Translation UI** (Material Design 2): source/target panes, 7 languages, instant translation on/off,
-  language swap, dark/light theme, streaming output, and live stats (NPU memory and utilization, speed, tokens).
-- **UI in 7 languages**: 日本語, English, 简体中文, 한국어, Français, Deutsch, Español.
-  Text is shown in the matching Noto Sans family (`Noto Sans JP`/`SC`/`KR`/`Noto Sans`) if it is installed,
-  otherwise in the system sans-serif font.
 - **OpenAI-compatible API** (`/v1/chat/completions`, streaming), using the same request format as llama.cpp's `llama-server`.
 
 ## How it works

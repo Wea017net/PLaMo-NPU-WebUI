@@ -2,6 +2,9 @@
 
 [English](README.md) | **日本語**
 
+> [!IMPORTANT]
+> 100% Vibe Coding なリポジトリです。
+
 Preferred Networks の翻訳モデル [PLaMo 3 Translate 2B](https://huggingface.co/pfnet/plamo-3-translate-2b) を、
 Intel Core Ultra 搭載 PC の **NPU（Intel® AI Boost）** で動かすためのツールです。完全にオフラインで動作し、
 ブラウザから使える翻訳 UI が付属します。
@@ -16,11 +19,6 @@ Intel Core Ultra 搭載 PC の **NPU（Intel® AI Boost）** で動かすため�
 
 - **NPU で動作**: [OpenVINO GenAI](https://github.com/openvinotoolkit/openvino.genai) で推論します。GPU や CPU の大部分は空いたままです。
 - **オフライン**: セットアップ後はインターネットとの通信を一切行いません（Web フォントや CDN も使いません）。
-- **翻訳 UI**（Material Design 2）: 左右の入力・訳文欄、7 言語、即時翻訳のオン / オフ、言語の入れ替え、ダーク / ライトテーマ、
-  ストリーミング表示、統計（NPU のメモリと使用率、速度、トークン数）。
-- **UI は 7 言語に対応**: 日本語、English、简体中文、한국어、Français、Deutsch、Español。
-  文字はその言語の Noto Sans（`Noto Sans JP` / `SC` / `KR` / `Noto Sans`）がインストールされていればそれを使い、
-  無ければシステムの sans-serif フォントで表示します。
 - **OpenAI 互換 API**（`/v1/chat/completions`、ストリーミング対応）。リクエスト形式は llama.cpp の `llama-server` と同じです。
 
 ## 仕組み
