@@ -2,7 +2,7 @@
 
 import { $, initRipple, initMenus, toggleMenu, closeMenus } from "./util.js";
 import { t, ui, UI_LANGS, applyStatic, setUiLang, onUiLangChange } from "./i18n.js";
-import { BACKEND, DEVICE_LABEL } from "./config.js";
+import { APP_VERSION, BACKEND, DEVICE_LABEL } from "./config.js";
 import { initTheme, renderTheme } from "./theme.js";
 import { initStats, renderStats, pollStats, setLastRun, processLabel } from "./stats.js";
 import { initTranslator, renderTranslator, isTranslating } from "./translator.js";
@@ -43,6 +43,7 @@ function renderAll() {
   if ($("about").open) renderAbout();
 }
 
+$("app-version").textContent = `v${APP_VERSION}`;
 initRipple();
 initMenus();
 initTheme();

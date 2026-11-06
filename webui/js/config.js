@@ -1,3 +1,6 @@
+// アプリのバージョン（画面下部とライセンスダイアログに表示する）
+export const APP_VERSION = "1.0";
+
 // 接続先の設定。この UI は npu_server.py が API と一緒に配信するので、API は同じオリジン。
 // llama.cpp の llama-server（OpenAI 互換 API）と組み合わせる場合は BACKEND = "gpu"、
 // API_BASE = "http://127.0.0.1:8000" のように書き換える（統計は /api/stats を返すサーバーが必要）。
