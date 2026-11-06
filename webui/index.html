@@ -65,6 +65,12 @@
         <div class="progress" id="progress"></div>
         <div class="output placeholder" id="out"></div>
         <div class="pane-foot">
+          <div class="form-select" id="form-select" hidden>
+            <button class="dropdown ripple" id="form-btn" aria-haspopup="menu" aria-expanded="false">
+              <span class="mi">edit_note</span><span class="form-value"></span><span class="mi arrow">arrow_drop_down</span>
+            </button>
+            <div class="menu form-menu" id="form-menu" role="menu" hidden></div>
+          </div>
           <div class="chips" id="chips"></div>
           <span class="spacer"></span>
           <button class="icon-btn ripple" id="copy" data-i18n-attr="title:copy,aria-label:copy" disabled><span class="mi">content_copy</span></button>

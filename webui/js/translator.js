@@ -1,18 +1,24 @@
 // 翻訳カード: 言語タブ・入力欄・即時翻訳スイッチ・ストリーミング翻訳
 
 import { $, store, closeMenus, toggleMenu } from "./util.js";
-import { t, nf, locale, langName, LANG_CODES, htmlLang } from "./i18n.js";
+import { t, nf, locale, langName, LANG_CODES, isLangCode, htmlLang, RTL_LANGS } from "./i18n.js";
 import { API_BASE, BACKEND } from "./config.js";
 
 const AUTO = "auto";
 const RECENT_N = 3;                      // タブに出す最近使った言語の数
-const TAB_EXCLUDE = new Set(["zh"]);     // 上部のタブには出さない（▼ の全一覧からは選べる）
+const TAB_EXCLUDE = new Set(["zh-hans", "zh-hant"]);   // 上部のタブには出さない（▼ の全一覧からは選べる）
 const KBD = "<kbd>Ctrl</kbd> + <kbd>Enter</kbd>";
+// 日本語訳の文体（PLaMo の form 引数。auto は指定しない＝モデル任せ）
+const FORMS = ["auto", "polite", "plain"];
 
-let srcLang = store.get("plamo.src", AUTO);
-let dstLang = store.get("plamo.target", "ja");
-if (srcLang !== AUTO && !LANG_CODES.includes(srcLang)) srcLang = AUTO;
-if (!LANG_CODES.includes(dstLang)) dstLang = "ja";
+// 以前の版で保存した "zh" は簡体字として読み替える
+const migrate = (code) => (code === "zh" ? "zh-hans" : code);
+let srcLang = migrate(store.get("plamo.src", AUTO));
+let dstLang = migrate(store.get("plamo.target", "ja"));
+if (srcLang !== AUTO && !isLangCode(srcLang)) srcLang = AUTO;
+if (!isLangCode(dstLang)) dstLang = "ja";
+let form = store.get("plamo.form", "auto");
+if (!FORMS.includes(form)) form = "auto";
 
 let instant = store.get("plamo.instant", "1") === "1";
 let controller = null;       // 実行中の翻訳（AbortController）
@@ -28,7 +34,7 @@ const loadRecent = (key, fallback) => {
   try {
     const v = JSON.parse(store.get(key, ""));
     if (Array.isArray(v)) {
-      const list = v.filter((c) => LANG_CODES.includes(c) && !TAB_EXCLUDE.has(c)).slice(0, RECENT_N);
+      const list = v.filter((c) => isLangCode(c) && !TAB_EXCLUDE.has(c)).slice(0, RECENT_N);
       if (list.length) return list;
     }
   } catch { /* 壊れた値は無視 */ }
@@ -121,9 +127,40 @@ function renderTabs() {
   buildSide("src");
   buildSide("dst");
   $("swap").disabled = srcLang === AUTO || srcLang === dstLang;
-  // 入力欄は翻訳元の言語の書体で表示する（自動検出なら表示言語に従う）
-  if (srcLang === AUTO) $("src").removeAttribute("lang");
-  else $("src").lang = htmlLang(srcLang);
+  // 入力欄は翻訳元の言語の書体・書字方向で表示する（自動検出なら表示言語の書体で、方向は内容から判断）
+  const src = $("src");
+  if (srcLang === AUTO) { src.removeAttribute("lang"); src.dir = "auto"; }
+  else { src.lang = htmlLang(srcLang); src.dir = RTL_LANGS.has(srcLang) ? "rtl" : "ltr"; }
+  renderForm();
+}
+
+/* ---------------- 文体（日本語訳のみ） ---------------- */
+function renderForm() {
+  const wrap = $("form-select");
+  wrap.hidden = dstLang !== "ja";
+  const btn = $("form-btn");
+  const value = t("form_btn", { v: t(`form_${form}`) });
+  btn.querySelector(".form-value").textContent = value;
+  btn.title = t("form_title");
+  btn.setAttribute("aria-label", `${t("form_title")} – ${value}`);
+  $("form-menu").replaceChildren(...FORMS.map((f) => {
+    const it = document.createElement("button");
+    it.className = "menu-item";
+    it.setAttribute("role", "menuitemradio");
+    it.setAttribute("aria-checked", String(f === form));
+    it.innerHTML = '<span class="mi">check</span><span></span>';
+    it.lastChild.textContent = t(`form_${f}_full`);
+    it.onclick = () => setForm(f);
+    return it;
+  }));
+}
+
+function setForm(f) {
+  form = f;
+  store.set("plamo.form", f);
+  closeMenus();
+  renderForm();
+  if (instant) scheduleTranslate(0);
 }
 
 function swap() {
@@ -173,6 +210,7 @@ function setPlaceholder() {
   const out = $("out");
   out.className = "output placeholder";
   out.removeAttribute("lang");
+  out.removeAttribute("dir");
   out.textContent = t("out_ph");
   lastChips = null;
   $("chips").replaceChildren();
@@ -184,6 +222,7 @@ function showResult(text) {
   const out = $("out");
   out.className = "output result";
   out.lang = htmlLang(dstLang);
+  out.dir = RTL_LANGS.has(dstLang) ? "rtl" : "ltr";
   out.textContent = text;
 }
 
@@ -218,7 +257,8 @@ function scheduleTranslate(delay) {
 
 async function translate() {
   const text = $("src").value.trim();
-  const key = `${srcLang}|${dstLang}|${text}`;
+  const useForm = dstLang === "ja" && form !== "auto";   // form は翻訳先が日本語のときだけ有効
+  const key = `${srcLang}|${dstLang}|${useForm ? form : ""}|${text}`;
   if (!text) {
     controller?.abort();
     lastKey = "";
@@ -240,6 +280,7 @@ async function translate() {
 
   const kwargs = { target_lang: dstLang };
   if (srcLang !== AUTO) kwargs.source_lang = srcLang;
+  if (useForm) kwargs.form = form;
 
   try {
     const res = await fetch(API_BASE + "/v1/chat/completions", {
@@ -297,6 +338,7 @@ async function translate() {
     $("chips").replaceChildren();
     out.className = "output error";
     out.removeAttribute("lang");
+    out.removeAttribute("dir");
     out.textContent = t("error") + e.message + "\n" + t(`err_${BACKEND}`);
   } finally {
     if (controller === ctrl) {
@@ -332,6 +374,7 @@ export function initTranslator(opts = {}) {
   $("clear").onclick = () => { src.value = ""; onSourceChanged(); src.focus(); };
   $("go").onclick = () => scheduleTranslate(0);
   $("swap").onclick = swap;
+  $("form-btn").onclick = (e) => { e.stopPropagation(); toggleMenu($("form-menu"), $("form-btn")); };
   $("instant").onclick = () => {
     instant = !instant;
     store.set("plamo.instant", instant ? "1" : "0");

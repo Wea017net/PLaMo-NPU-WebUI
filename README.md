@@ -19,6 +19,8 @@ Run [PLaMo 3 Translate 2B](https://huggingface.co/pfnet/plamo-3-translate-2b) by
 - **Runs on the NPU** with [OpenVINO GenAI](https://github.com/openvinotoolkit/openvino.genai). The GPU and most of the CPU stay free.
 - **Offline**: after setup, nothing is sent to or loaded from the internet (no web fonts, no CDNs).
 - **OpenAI-compatible API** (`/v1/chat/completions`, streaming), using the same request format as llama.cpp's `llama-server`.
+- **All 53 languages** supported by PLaMo 3 Translate can be picked in the web UI, including Simplified and Traditional Chinese.
+- **Japanese style**: when translating into Japanese, choose polite (です・ます) or plain (だ・である) style, or leave it to the model.
 
 ## How it works
 

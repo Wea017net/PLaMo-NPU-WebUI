@@ -20,6 +20,8 @@ Intel Core Ultra 搭載 PC の **NPU（Intel® AI Boost）** で動かすため�
 - **NPU で動作**: [OpenVINO GenAI](https://github.com/openvinotoolkit/openvino.genai) で推論します。GPU や CPU の大部分は空いたままです。
 - **オフライン**: セットアップ後はインターネットとの通信を一切行いません（Web フォントや CDN も使いません）。
 - **OpenAI 互換 API**（`/v1/chat/completions`、ストリーミング対応）。リクエスト形式は llama.cpp の `llama-server` と同じです。
+- **53 言語に対応**: PLaMo 3 Translate が対応する全言語（中国語の簡体字・繁体字を含む）を Web UI から選べます。
+- **日本語の文体指定**: 日本語に訳すとき、敬体（です・ます調）・常体（だ・である調）・自動（指定しない）を選べます。
 
 ## 仕組み
 
